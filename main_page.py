@@ -11,8 +11,8 @@ query = st.text_input("Mortal, pose your request!")
 
 # model
 import os
-os.system("pip install transformers  --user")
-os.system("pip install tensorflow --user")
+os.system("python -m pip install transformers  --user")
+os.system("python -m pip install tensorflow --user")
 
 from transformers import TFAutoModelForQuestionAnswering, AutoTokenizer, pipeline
 from pathlib import Path
