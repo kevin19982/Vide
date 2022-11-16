@@ -27,7 +27,6 @@ QA_input = {
 
 res = nlp(QA_input)
 
-@st.cache
 model = AutoModelForQuestionAnswering.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
