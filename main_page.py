@@ -27,6 +27,7 @@ import operator
 from sentence_transformers import SentenceTransformer
 import sentence_transformers
 from io import StringIO
+import random
 nltk.download("stopwords")
 nltk.download("punkt")
 nltk.download("averaged_perceptron_tagger")
@@ -60,24 +61,40 @@ idx = np.where(cosine_scores_query[0] > 0.4)[0]
 sentences_answer = ". ".join(np.array(text_sentences)[idx])
 
 
-# q and a
-# loading packages
-from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
-from pathlib import Path
+# if the list of sentences with a cosine score above the threshold is not empty
+if list(np.array(text_sentences)[idx]):
 
-# get an answer to the question
-model_name = "deepset/roberta-base-squad2"
+  # q and a
+  # loading packages
+  from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
+  from pathlib import Path
 
-nlp = pipeline("question-answering", model = model_name, tokenizer = model_name)
-QA_input = {
-    "question": query,
-    "context": sentences_answer
-}
 
-res = nlp(QA_input)
+  # get an answer to the question
+  model_name = "deepset/roberta-base-squad2"
 
-model = AutoModelForQuestionAnswering.from_pretrained(model_name)
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+  nlp = pipeline("question-answering", model = model_name, tokenizer = model_name)
+  QA_input = {
+      "question": query,
+      "context": sentences_answer
+  }
 
-st.write("Answer:", res)
+  res = nlp(QA_input)
 
+  model = AutoModelForQuestionAnswering.from_pretrained(model_name)
+  tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+  st.write("Answer:", res)
+else:
+  answers_else = {"There was no answer found in the document. Maybe, I don't know, throw a dice?",
+  "Error, begin human extinction.",
+  "Have you tried tarrot cards?",
+  "I did my best, I swear.",
+  "Error, it seems like you accidently uploaded the lyrics of the first Pokemon theme.",
+  "The morning is nigh, you did try your best for now, no answer in sight. - Thoughts of a lonely program 1st edition",
+  "A wise person once said to trust your gut. Might be better than trusting me in this case.",
+  "You seem desparate to ask for help from me. And I seem desparate to give you this help... I didn't mean it, please ask me something, I have a family to feed.",
+  "Bark bark bark... I'm sorry, I accidentally loaded the wrong language module. It should be fine now.",
+  "Have you tried making music before? It's nice (pls do, I need someone to talk about my interests with).",
+  "Unfortunately, I hit a wall. Literally. My head hurts..."}
+  st.write(random.sample(answers_else, 1)[0])  # print one randomly selected sentence, if no answer to the question could be found
