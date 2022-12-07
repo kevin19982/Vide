@@ -72,7 +72,7 @@ with st.spinner("Please wait, our army of insanely intelligent raccoons skims th
     sentences_answer = ". ".join(np.array(text_sentences)[idx])
 
 
-# if the list of sentences with a cosine score above the threshold is not empty
+    # if the list of sentences with a cosine score above the threshold is not empty
     if list(np.array(text_sentences)[idx]):
     # print index, cosine score and sentence
         for i in idx:
