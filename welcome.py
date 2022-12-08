@@ -18,6 +18,7 @@ logo_4 = Image.open("logo_temp/vide_design_4.png")
 logo_5 = Image.open("logo_temp/vide_design_5.png")
 logo_6 = Image.open("logo_temp/vide_design_6.png")
 logo_7 = Image.open("logo_temp/vide_design_7.png")
+logo_8 = Image.open("logo_temp/vide_design_8.png")
 
 col1, col2, col3, col4, col5, col6 = st.columns(6)
 with col1:
@@ -25,6 +26,7 @@ with col1:
     st.image(logo_7)
 with col2:
     st.image(logo_2)
+    st.image(logo_8)
 with col3:
     st.image(logo_3)
 with col4:
