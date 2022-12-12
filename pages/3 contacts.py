@@ -5,8 +5,8 @@ import streamlit as st
 from PIL import Image
 
 # load pictures
-logo_3 = Image.open("C:/Users/siriv/Downloads/Data_Science_Project/scripts/logo_temp/vide_design_3.png")
-logo_3_200px = Image.open("C:/Users/siriv/Downloads/Data_Science_Project/scripts/logo_temp/vide_design_3_200px.png")
+logo_3 = Image.open("logo_temp/vide_design_3.png")
+logo_3_200px = Image.open("logo_temp/vide_design_3_200px.png")
 
 # title (placed in center)
 header_1, header_2, header_3 = st.columns(3)
