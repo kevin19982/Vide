@@ -5,8 +5,8 @@ import streamlit as st
 from PIL import Image
 
 # load pictures
-logo_3 = Image.open("C:/Users/siriv/Downloads/Data_Science_Project/scripts/logo_temp/vide_design_3.png")
-im = Image.open("C:/Users/siriv/Downloads/Data_Science_Project/scripts/examples/hello.jpg")
+logo_3 = Image.open("logo_temp/vide_design_3.png")
+im = Image.open("hello.jpg")
 
 # title
 st.title("It's literally only a cat")
