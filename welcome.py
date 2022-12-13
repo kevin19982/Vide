@@ -3,6 +3,19 @@
 # load packages
 import streamlit as st
 from PIL import Image
+import pandas as pd
+
+# page configurations
+st.set_page_config(
+    menu_items={
+        "Get Help": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "Report a bug": "http://www.vide-qa.de/contacts",
+        "About": "This is a project by 2 students."
+    }
+)
+
+# import dataframe with companies and years
+from company_year import comp_year
 
 # load pictures
 logo_3 = Image.open("logo_temp/vide_design_3.png")
@@ -40,8 +53,8 @@ with doc1:
 
 # select company and year
 with doc2:
-    choices_company = st.selectbox("Please select the company of your choice.", ["Coca Cola", "Amazon", "Alphabet", "Netflix", "Facebook", "AirBnb"])
-    choices_quarter = st.selectbox("Please select the year of your choice.", ["2000", "2001", "2002", "20003", "2004"])
+    choices_company = st.selectbox("Please select the company of your choice.", comp_year_df["company"].unique())
+    choices_quarter = st.selectbox("Please select the year of your choice.", comp_year_df.loc[comp_year_df["company"] == choices_company, "year"])
 
 st.write("In the next step, you can input your question and afterwards wait for an answer regarding your question.")
 
