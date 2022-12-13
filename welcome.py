@@ -8,7 +8,7 @@ import pandas as pd
 # page configurations
 st.set_page_config(
     menu_items={
-        "Get Help": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "Get Help": "http://www.vide-qa.de/contacts",
         "Report a bug": "http://www.vide-qa.de/contacts",
         "About": "This is a project by 2 students."
     }
