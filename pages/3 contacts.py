@@ -25,5 +25,6 @@ with col1:
     st.image(logo_3_200px)  # display logo
 with col2:
     st.markdown("### Business inquiries:")  # display information
-    st.write("Kevin Kopp: kevin.kopp@thisemaildoesnotleadanywherefornowbutnicetry.de")
-    st.write("Felix Froschauer: felix.froschauer@thisemaildoesnotleadanywhereeithernicetryonanotherthenotethelocationofthetraseureis92050305EASTfollowyourdreamsandstuffgogogo.de")
+    st.write("Kevin Kopp: kevin.kopp1998@gmail.com")
+    st.write("Felix Froschauer: felix.froschauer@gmx.de")
+    
