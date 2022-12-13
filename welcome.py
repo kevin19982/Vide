@@ -15,7 +15,10 @@ st.set_page_config(
 )
 
 # import dataframe with companies and years
-from company_year import comp_year
+#from company_year import comp_year
+
+# dataframe for company-year-combinations
+comp_year_df = pd.read_csv("company_year.csv")
 
 # load pictures
 logo_3 = Image.open("logo_temp/vide_design_3.png")
