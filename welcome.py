@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # import dataframe with companies and years
-#from company_year import comp_year
+#from comp_year import comp_year_df
 
 # dataframe for company-year-combinations
 comp_year_df = pd.read_csv("company_year.csv")
