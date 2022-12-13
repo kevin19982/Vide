@@ -125,8 +125,8 @@ if submit:  # if submit-button is clicked
         # if the list of sentences with a cosine score above the threshold is not empty
             if list(np.array(text_sentences)[idx]):
             # print index, cosine score and sentence
-                for i in idx:
-                    st.write(i, ": ", np.round(cosine_scores_query[0][i].numpy(), 2), "; ", text_sentences[i])
+                #for i in idx:
+                    #st.write(i, ": ", np.round(cosine_scores_query[0][i].numpy(), 2), "; ", text_sentences[i])
 
 
                 # q and a
@@ -149,7 +149,7 @@ if submit:  # if submit-button is clicked
                 model = AutoModelForQuestionAnswering.from_pretrained(model_name)
                 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-                st.write("Answer: ", res)
+                st.write("Answer: ", res["answer"])
             else:
                 answers_else = {"There was no answer found in the document. Maybe, I don't know, throw a dice?",
                 "Error, begin human extinction.",
