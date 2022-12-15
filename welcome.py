@@ -22,11 +22,12 @@ comp_year_df = pd.read_csv("company_year.csv")
 
 # load pictures
 logo_3 = Image.open("logo_temp/vide_design_3.png")
+logo_winter = Image.open("logo_temp/vide_design_winter.png")
 
 # header
 header1, header2, header3, header4, header5 = st.columns(5)
 with header3:
-    st.image(logo_3)
+    st.image(logo_winter)
 
 # title
 st.title("VIDE Question-Answering")
@@ -166,3 +167,22 @@ if submit:  # if submit-button is clicked
                 st.write("(No answer found, please insert another question or try another document.)")
     else:
         st.write("Please enter a query into the intended text-box to initiate a search.")
+    done = 1
+    if done:
+        st.snow()
+        
+        
+# add some empty space
+st.write(" ")
+st.write(" ")
+st.write(" ")
+st.write(" ")
+st.write(" ")
+st.write(" ")
+st.write(" ")
+st.write(" ")
+
+# show question examples
+graphic_1 = Image.open("vide_graphic_1.png")
+st.image(graphic_1)
+
