@@ -22,7 +22,42 @@
 
         ],
         "table": [
-
+            [
+                "",
+                "amount ( in millions )"
+            ],
+            [
+                "2014 net revenue",
+                "$ 5735"
+            ],
+            [
+                "retail electric price",
+                "187"
+            ],
+            [
+                "volume/weather",
+                "95"
+            ],
+            [
+                "waterford 3 replacement steam generator provision",
+                "-32 ( 32 )"
+            ],
+            [
+                "miso deferral",
+                "-35 ( 35 )"
+            ],
+            [
+                "louisiana business combination customer credits",
+                "-107 ( 107 )"
+            ],
+            [
+                "other",
+                "-14 ( 14 )"
+            ],
+            [
+                "2015 net revenue",
+                "$ 5829"
+            ]
         ],
         "qa": {
             "question": "what is the net change in net revenue during 2015 for entergy corporation?",
@@ -46,18 +81,7 @@
             },
             "program_re": "",
             "model_input": [
-                [
-                    "table_1",
-                    "the 2014 net revenue of amount ( in millions ) is $ 5735 ;"
-                ],
-                [
-                    "table_3",
-                    "the volume/weather of amount ( in millions ) is 95 ;"
-                ],
-                [
-                    "table_8",
-                    "the 2015 net revenue of amount ( in millions ) is $ 5829 ;"
-                ]
+
             ]
         },
         "id": "",
