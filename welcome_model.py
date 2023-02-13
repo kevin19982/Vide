@@ -219,7 +219,7 @@ if submit:  # if submit-button is clicked
             #st.write(text)
 
             # split text into sentences
-            text_sentences = text.split(". ")
+            text_sentences = text.split(" .")
             #st.write(text_sentences)
 
             # calculate embeddings
