@@ -233,13 +233,15 @@ if submit:  # if submit-button is clicked
             cosine_scores_query = sentence_transformers.util.pytorch_cos_sim(embeddings_query, embeddings_sentences)
 
             # get indices of highest cosine scores
-            idx = np.where(cosine_scores_query[0] > 0.3)[0]   # the problem lies here
+            idx = np.where(cosine_scores_query[0] > 0.6)[0]   # the problem lies here
             #st.write("idx: ", idx)
             # join retrieved sentences
             #st.write(text_sentences)
-            sentences_answer = np.array(text_sentences)[idx]  #sentences_answer = ". ".join(np.array(text_sentences)[idx])
-            sentences_answer = sentences_answer.tolist()
-            #st.write(sentences_answer)
+            sentences_answer = []
+            for i in idx:
+                text_temp = text_sentences[i] + " ."
+                text_temp = text_temp.strip()
+                sentences_answer.append(text_temp)
 
 
         # if the list of sentences with a cosine score above the threshold is not empty
@@ -279,29 +281,7 @@ if submit:  # if submit-button is clicked
                         # add question
                         model_data[0]["qa"]["question"] = query if query else query_2
                         # add text
-                        model_data[0]["pre_text"] = [
-                            "entergy corporation and subsidiaries management 2019s financial discussion and analysis a result of the entergy louisiana and entergy gulf states louisiana business combination , results of operations for 2015 also include two items that occurred in october 2015 : 1 ) a deferred tax asset and resulting net increase in tax basis of approximately $ 334 million and 2 ) a regulatory liability of $ 107 million ( $ 66 million net-of-tax ) as a result of customer credits to be realized by electric customers of entergy louisiana , consistent with the terms of the stipulated settlement in the business combination proceeding .",
-                            "see note 2 to the financial statements for further discussion of the business combination and customer credits .",
-                            "results of operations for 2015 also include the sale in december 2015 of the 583 mw rhode island state energy center for a realized gain of $ 154 million ( $ 100 million net-of-tax ) on the sale and the $ 77 million ( $ 47 million net-of-tax ) write-off and regulatory charges to recognize that a portion of the assets associated with the waterford 3 replacement steam generator project is no longer probable of recovery .",
-                            "see note 14 to the financial statements for further discussion of the rhode island state energy center sale .",
-                            "see note 2 to the financial statements for further discussion of the waterford 3 write-off .",
-                            "results of operations for 2014 include $ 154 million ( $ 100 million net-of-tax ) of charges related to vermont yankee primarily resulting from the effects of an updated decommissioning cost study completed in the third quarter 2014 along with reassessment of the assumptions regarding the timing of decommissioning cash flows and severance and employee retention costs .",
-                            "see note 14 to the financial statements for further discussion of the charges .",
-                            "results of operations for 2014 also include the $ 56.2 million ( $ 36.7 million net-of-tax ) write-off in 2014 of entergy mississippi 2019s regulatory asset associated with new nuclear generation development costs as a result of a joint stipulation entered into with the mississippi public utilities staff , subsequently approved by the mpsc , in which entergy mississippi agreed not to pursue recovery of the costs deferred by an mpsc order in the new nuclear generation docket .",
-                            "see note 2 to the financial statements for further discussion of the new nuclear generation development costs and the joint stipulation .",
-                            "net revenue utility following is an analysis of the change in net revenue comparing 2015 to 2014 .",
-                            "amount ( in millions ) .",
-                            "the retail electric price variance is primarily due to : 2022 formula rate plan increases at entergy louisiana , as approved by the lpsc , effective december 2014 and january 2015 ; 2022 an increase in energy efficiency rider revenue primarily due to increases in the energy efficiency rider at entergy arkansas , as approved by the apsc , effective july 2015 and july 2014 , and new energy efficiency riders at entergy louisiana and entergy mississippi that began in the fourth quarter 2014 ; and 2022 an annual net rate increase at entergy mississippi of $ 16 million , effective february 2015 , as a result of the mpsc order in the june 2014 rate case .",
-                            "see note 2 to the financial statements for a discussion of rate and regulatory proceedings .",
-                            "The 2014 net revenue is $ 5735 .",
-                            "The retail electric price is 187 .",
-                            "The volume/weather is 95 .",
-                            "The waterford 3 replacement steam generator provision is -32 .",
-                            "The 2015 net revenue is $ 5829 .",
-                            "The 2016 number of employees is 10 .",
-                            "The 2017 number of employees is 12 .",
-                            "Nice weather we have today, truely ."
-                        ]
+                        model_data[0]["pre_text"] = sentences_answer
                     
                     #st.write(model_data[0])
 
