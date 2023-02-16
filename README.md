@@ -1,5 +1,5 @@
 # Vide
-Tool to get information from 10-K
+Tool to get information from 10-K reports.
 
 Website: http://wwww.vide-qa.de
 
