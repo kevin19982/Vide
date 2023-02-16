@@ -1,9 +1,4 @@
-# further debugging: table 126
-# change NA to ""
-
-
-
-#Preprocessing goal: transform the data from the raw html format into the right JSON format 
+#Preprocessing goal: transform the data from the raw html format into machine readable format
 
 library(readr)
 library(xml2)
@@ -15,7 +10,8 @@ library(rjson) # load the file
 library(jsonlite) # write the file
 library(stringr) # str_detect 
 
-setwd("/Users/felix/Documents/cloud/Data-testing")
+# set working directory to project folder
+setwd("your_path")
 
 
 # import a list with all available data
@@ -54,7 +50,7 @@ row_to_text <- function(table, header_index, iter, indices_subheaders){
   res <- ""
   if (ncol(table) > 1){
     for (col in 2:ncol(table)){
-      # change (123) to ( 123 )
+      # change (123) to ( 123 ) 
       if (grepl("\\(", current_row[col])){
         
         string <- as.character(current_row[col])
@@ -64,16 +60,14 @@ row_to_text <- function(table, header_index, iter, indices_subheaders){
       
       if (is.na(current_row[col])){
       } else if (exists("subheader")){
+        # transform each cell in the specified row into a sentence 
         #res <- paste0(res, "In ", subheader, " the ", current_row[1], " of ", header[col], " is ", current_row[col], " . \n")
         res <- c(res, paste0("In ", subheader, " the ", current_row[1], " of ", header[col], " is ", current_row[col], " . "))
       } else{
         #res <- paste0(res, "the ", current_row[1], " of ", header[col], " is ", current_row[col], " .  \n")
         res <- c(res, paste0("the ", current_row[1], " of ", header[col], " is ", current_row[col], " . "))
         
-        
-        
         }
-      
       
       
     } 
@@ -98,7 +92,6 @@ table_to_text <- function(table) {
   }
   
   
-  
   # change empty values to NA
   table[table == ""] <- NA 
   table[table == "$"] <- NA 
@@ -113,16 +106,6 @@ table_to_text <- function(table) {
     empty_string = ""
     return(empty_string)
   } 
-  
-  
-  # change all NA's to empty values
-  ################################
-  #table_new[is.na(table_new)] <- ""
-  
-  
-  # inside the tables there are sometimes sub-headers => this information needs to be 
-  # incorporated in each sentence
-  # first we need to find them and then use the info in each subsequent row
 
   
   # decide for header row (check if first entry of the row is not NA)
@@ -149,6 +132,7 @@ table_to_text <- function(table) {
   #print(dim(table_new))
   #print(indices_subheaders)
   
+  # transform each row into sentences
   table_text <- ""
   for (iter in 1:number_of_sentences){
     row_text <- row_to_text(table = table_new, header_index = header_index, iter = iter, indices_subheaders = indices_subheaders)
@@ -157,9 +141,7 @@ table_to_text <- function(table) {
     
   }
   
-  #table_text <- paste0(table_text) # , "#end#")
-  
-  
+ 
   #print(table_text)
   return(table_text)
   
@@ -203,16 +185,10 @@ file_to_text <- function(idx){
 
     current_table <- tables[[i]]
     current_table_text <- try({table_to_text(current_table)})
-    #placeholder <- paste0("\n #", i, " \n")
-    #print(paste0("progress: ", i, "/" , length(tables)))
-    #all_tables <- paste0(all_tables, placeholder, current_table_text)
+    
     #all_tables <- paste0(all_tables, " ", current_table_text)
     all_tables <- c(all_tables, current_table_text)
   }
-  #write(all_tables,"all_tables_text_output_5.txt")
-  # return(all_tables)
-  #return(all_tables)
-  
   
   ################################### STEP 2 ###################################
   ### delete all non transformed data from the raw text and combine table text + normal text
@@ -252,7 +228,6 @@ file_to_text <- function(idx){
     dot_combined <- c(dot_combined, dot)
     
   }
-  #write(dot_combined, "all_text_text_output.txt")
   
   ################################### STEP 3 ###################################
   ### combine the output as a txt file
@@ -264,13 +239,11 @@ file_to_text <- function(idx){
   # as string not list 
   full_text_string <- ""
   for (sentence in 2:length(full_text)){ # 1:length(tables)
+    # exclude empty strings: by definition there are some from the tables
     if (full_text[[sentence]] == ""){} 
     else if (full_text[[sentence]] == full_text[[sentence-1]]){} 
     else {
-      #print(full_text[[sentence]])
-      
-      #model_template[[1]][["pre_text"]][index] <- tables[[sentence]]
-      
+      # combine
       full_text_string <- paste0(full_text_string, full_text[[sentence]])
       #index <- index + 1
     }
@@ -292,216 +265,40 @@ file_to_text <- function(idx){
 }
 
 
-# goes through all 
+# goes through all company-year combination
 for (report in 1:nrow(company_list)){
   try({
   print(paste0("Report: ", report))
   full_text <- file_to_text(report)
   })
-  
 }
 
 
 
 ##################################################################################
-# debug 
 
-# 37
-
-table_69 <- file_to_text(5)
-
-
-
-  
-# replica of the function from above
-if (compare(table_69[,1], table_69[,2])[2] == TRUE){
-  table_69 <- table_69[,-1]
-  print("reduced")
-  
-}
-
-
-# change empty values to NA
-table_69[table_69 == ""] <- NA
-
-table_69[table_69 == "$"] <- NA
-
-# delete columns with more than 10% NA
-table_69 = table_69[,!sapply(table_69, function(x) mean(is.na(x)))> 0.5]
-
-
-indices_subheaders <- apply(table_69, 1, function(x) sum(is.na(x)))
-
-if (!is.na(table_69[2, 1])){
-  header_index <- 1
-} else if (!is.na(table_69)[3, 1]){
-  header_index <- 2
-} else if (!is.na(table_69)[4, 1]){
-  header_index <- 3
-} else if (!is.na(table_69)[5, 1]){
-  header_index <- 4
-} else if (!is.na(table_69)[6, 1]){
-  header_index <- 5
-} else {header_index <- 5}
-
-
-header = table_69[header_index, ]
-start_row = header_index + 1
-number_of_sentences <- nrow(table_69) - header_index
-
-
-
-table_text <- ""
-
-
-
-
-for (iter in 19:number_of_sentences){
-  row_text <- row_to_text(table = table_69, header_index = header_index, iter = iter, indices_subheaders = indices_subheaders)
-  #table_text <- paste0(table_text, row_text) #, "next_row")
-  table_text <- c(table_text, row_text)
-  
-}
-
-
-table_text
-
-
-
-iter <- 22
-table_text <- ""
-
-
-# the header is the same in all rows
-header <- table_69[header_index, ]
-
-#iterate through rows  
-current_row <- table_69[header_index+iter, ]
-
-# define current sub-header (first check if there is one)
-if (any(indices_subheaders == ncol(table_69)-1)){
-  print("it exists")
-  # then go and find the last sub-header
-  
-  for (i in 1:(header_index+iter)){
-    if (indices_subheaders[i] == ncol(table_69)-1){
-      subheader <- table_69[i, 1]
-      print("yes")
-    } else {print("no")}
-  }
-}
-
-
-
-# skip the row if current_row = sub-header row
-if (indices_subheaders[header_index+iter] == ncol(table_69)-1){
-  print("yes")
-  res <- ""
-} else{print("no")}
-
-
-
-res <- ""
-
-if (ncol(table_69) > 1){
-  
-  for (col in 2:ncol(table_69)){
-    
-    # change (123) to ( 123 )
-    if (is.na(current_row[col])){
-      #res <- ""
-      print("is_no_dropped")
-    }
-    
-    
-    if (exists("subheader")){
-      print("subheader_exists")
-      print(col)
-      #res <- paste0(res, "In ", subheader, " the ", current_row[1], " of ", header[col], " is ", current_row[col], " . \n")
-      res <- c(res, paste0("In ", subheader, " the ", current_row[1], " of ", header[col], " is ", current_row[col], " . "))
-    } else{
-      #res <- paste0(res, "the ", current_row[1], " of ", header[col], " is ", current_row[col], " .  \n")
-      res <- c(res, paste0("the ", current_row[1], " of ", header[col], " is ", current_row[col], " . "))
-      print("no subheader")
-      
-      
-    }
-    
-    
-    
-  } 
-  
-} else{print("else else else")}
-
-
-
-res
-
-
-
-table_text
-
-
-######################################################################################
+# 
+# model_template <- rjson::fromJSON(file = "data/model_input_template.json")
+# 
+# index <- 1
+# full_text_string <- ""
 # 
 # 
-# 
-# company_date <- as.character(company_list$date.filed[1])
-# company_year <- strsplit(company_date, "-")[[1]][1]
-# company_name <- company_list$company.name[1]
-# 
+# for (sentence in 2:length(full_text)){ # 1:length(tables)
+#   if (full_text[[sentence]] == ""){} 
+#   else if (full_text[[sentence]] == full_text[[sentence-1]]){} 
+#   else {
+#     print(full_text[[sentence]])
 #     
-# 
-# company_date
-# 
-# 
-# 
-# 
-# 
-# 
+#     #model_template[[1]][["pre_text"]][index] <- tables[[sentence]]
+#     
+#     full_text_string <- paste0(full_text_string, full_text[[sentence]])
+#     #index <- index + 1
+#   }
+# }
 # 
 # 
-# 
-# 
-# 
-# 
-# 
-# 
-
-#write(full_text, "data/full_text.txt")
-# now get the correct form (plan for tomorrow => iteration through all files)
-model_template <- rjson::fromJSON(file = "data/model_input_template.json")
-
-
-index <- 1
-full_text_string <- ""
-
-
-for (sentence in 2:length(full_text)){ # 1:length(tables)
-  if (full_text[[sentence]] == ""){} 
-  else if (full_text[[sentence]] == full_text[[sentence-1]]){} 
-  else {
-    print(full_text[[sentence]])
-    
-    #model_template[[1]][["pre_text"]][index] <- tables[[sentence]]
-    
-    full_text_string <- paste0(full_text_string, full_text[[sentence]])
-    #index <- index + 1
-  }
-}
-
-write(full_text_string, "data/full_text_string.txt")
-
-
-
-
-write_json(model_template, "data/entire_report_2.json")
-
-
-
-
-
-
+# write_json(model_template, "data/entire_report_2.json")
 
 
 
@@ -509,30 +306,30 @@ write_json(model_template, "data/entire_report_2.json")
 
 #--------------------------------- debugging and cleaning help
 
-table_69 <- file_to_text(5)
-
-
-
-# replica of the function from above
-if (compare(table_69[,1], table_69[,2])[2] == TRUE){
-  table_69 <- table_69[,-1]
-  print("reduced")
-
-}
-
-
-# change empty values to NA
-table_69[table_69 == ""] <- NA
-
-table_69[table_69 == "$"] <- NA
-
-# delete columns with more than 10% NA
-table_69 = table_69[,!sapply(table_69, function(x) mean(is.na(x)))> 0.5]
+# table <- file_to_text(5)
+# 
+# 
+# 
+# # replica of the function from above
+# if (compare(table[,1], table[,2])[2] == TRUE){
+#   table <- table[,-1]
+#   print("reduced")
+# 
+# }
+# 
+# 
+# # change empty values to NA
+# table[table == ""] <- NA
+# 
+# table[table == "$"] <- NA
+# 
+# # delete columns with more than 10% NA
+# table = table[,!sapply(table, function(x) mean(is.na(x)))> 0.5]
 
 # nchar(string)
 
-# indices_subheaders <- apply(table_69, 1, function(x) sum(is.na(x)))
-# if (any(indices_subheaders == ncol(table_69)-1)){
+# indices_subheaders <- apply(table, 1, function(x) sum(is.na(x)))
+# if (any(indices_subheaders == ncol(table)-1)){
 #   print("yes")
 # } else {print("no")}
 # 

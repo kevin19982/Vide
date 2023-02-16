@@ -12,17 +12,18 @@ import json
 st.set_page_config(
     menu_items={
         "Get Help": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        "Report a bug": "http://www.vide-qa.de/contacts",
+        "Report a bug": "http://www.vide-qa.de/about",
         "About": "This is a project by 2 students based on the finqa dataset."
     }
 )
 
 
+#st.sidebar.title("application")
 
 # setup of the page
 # load pictures
-import datetime
-if datetime.datetime.now().month == 12:  # in december
+from datetime import datetime
+if datetime.now().month == 12:  # december
     logo = Image.open("logo_temp/vide_design_winter.png")  # winter-theme
 else:  # every other month
     logo = Image.open("logo_temp/vide_design_3.png")  # base
@@ -41,18 +42,18 @@ st.title("VIDE Question-Answering")
 # sidebar name of page
 with st.sidebar:
     st.image(logo)
-st.sidebar.markdown("# Application")
+st.sidebar.markdown("# welcome model")
 
 
 # introductory text
 st.markdown("## Welcome")
-st.write("Welcome to Vide - Question and Answering, a platform to extract relevant information from financial documents. We aim to deliver fast and concise answers to any question you have regarding recent developments in the financial world.")
-st.write("To get answers to your questions please either upload a .txt-file or select a company and year from the dropdown-menu. Subsequently, please type in your question into the dedicated field. The last step is to wait for your answer.")
+st.write("Welcome to Vide - Question and Answering, a platform to extract relevant information from financial documents. We aim to deliver fast and concise answers to any question you might have regarding developments in the financial world.")
+st.write("To get answers to your questions please select a company and year from the dropdown-menu or upload a .txt-file with an empty space before every point. Subsequently, please type in your question into the dedicated field and select the type of question you are asking (quantitative/qualitative). The last step is to wait for your answer.")
 
 
 # application
 st.markdown("## Application")
-st.write("In the first step you can either upload a .txt-file of the document you want to ask about or select a company and year from the selection boxes below.")
+st.write("In the first step you can select a company and year from the selection boxes below or upload a .txt-file of the document that you want to ask about.")
 
 
 
@@ -62,7 +63,7 @@ st.write("In the first step you can either upload a .txt-file of the document yo
 #from company_year import comp_year
 
 # dataframe for company-year-combinations
-comp_year_df = pd.read_csv("company_year.csv")
+comp_year_df = pd.read_csv("data/our_company_list.csv")
 
 
 # create columns for document choice
@@ -72,15 +73,14 @@ with doc1:
     file_10k = st.file_uploader("Please upload a txt of the document you would like to examine.")  # document upload
 # select company and year
 with doc2:
-    choices_company = st.selectbox("Please select the company of your choice.", comp_year_df["company"].unique())
-    choices_quarter = st.selectbox("Please select the year of your choice.", comp_year_df.loc[comp_year_df["company"] == choices_company, "year"])
-
+    choices_company = st.selectbox("Please select the company of your choice.", comp_year_df["company.name"].unique())
+    choices_year = st.selectbox("Please select the year of your choice.", comp_year_df.loc[comp_year_df["company.name"] == choices_company, "date.filed"])
 
 # choice of question
-st.write("In the next step, you can input your question and afterwards wait for an answer regarding your question.")
+st.write("Now, you can input your question into the dedicated field below and select the question tpye.")
 # input user query
 query = st.text_input("Please insert your question into the text-box below.")
-st.write("If you run into problems with the results, it might be helpful to rephrase the question, give extra information or leave some information out.")
+
 
 
 # recording- and translation-functions may be enabled again once testing finished
@@ -141,9 +141,11 @@ query_2 = 0
 
 # choice of model
 model_type = st.radio("Which type of question are you asking?",
-("Calculation", "Fact"))
+("Quantitative", "Qualitative"))
+
+st.write("If you run into problems with the results, it might be helpful to rephrase the question, give extra information or leave some information out. Important here, the date assigned to company is the day it was filed. That means, the file delivers information of the 3 preceding years.")
 # start computations
-st.write("Lastly, please start the answer retrieval by clicking the following Submit-button. A notificatioin sound will play, once your answer is ready.")
+st.write("Lastly, please start the answer retrieval by clicking the following Submit-button. A notification sound will play, once your answer is ready.")
 submit = st.button("Submit")  # submit-button
 
 
@@ -213,10 +215,33 @@ if submit:  # if submit-button is clicked
             # text is english
             Stopwords = set(stopwords.words("english")) 
 
+            # if a file was uploaded it is used, otherwise selected file 
+            if file_10k:
+                file = StringIO(file_10k.getvalue().decode("unicode_escape"))
+                text = file.read()
+            else:
+                text_path = "data/" + str(choices_company) + "_" + str(choices_year[:4]) + ".txt"
+                #st.write("text path: ")
+                #st.write(text_path)
+                #text_path = "C:/Users/siriv/Downloads/Vide-main/Vide-main/data/COCA COLA CO_2022.txt"
+                with open(text_path, encoding = "unicode_escape") as f_input:
+                    text = f_input.read()  # reading in the chosen text-file
+                    
+                    
+                    
             # transform document
-            file = StringIO(file_10k.getvalue().decode("unicode_escape"))
-            text = file.read()
+            #file = StringIO(file_10k.getvalue().decode("unicode_escape"))
+            #text = file.read()
             #st.write(text)
+
+            #text_path = "data/" + str(choices_company) + "_" + str(choices_year[:4]) + ".txt"
+            
+            #st.write("text path: ")
+            #st.write(text_path)
+            #text_path = "C:/Users/siriv/Downloads/Vide-main/Vide-main/data/COCA COLA CO_2022.txt"
+            #with open(text_path, encoding="unicode_escape") as f_input:
+                #text = f_input.read()  # reading in the chosen text-file
+
 
             # split text into sentences
             text_sentences = text.split(" .")
@@ -244,12 +269,14 @@ if submit:  # if submit-button is clicked
                 sentences_answer.append(text_temp)
 
 
+            # input sentences for qualitative model
+            sentences_answer_pre = ". ".join(np.array(text_sentences)[idx])
         # if the list of sentences with a cosine score above the threshold is not empty
             if list(np.array(text_sentences)[idx]):
             # print index, cosine score and sentence
                 #for i in idx:
                     #st.write(i, ": ", np.round(cosine_scores_query[0][i].numpy(), 2), "; ", text_sentences[i])
-                if model_type == "Fact":
+                if model_type == "Qualitative":
                     # q and a
                     # loading packages
                     from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
@@ -262,7 +289,7 @@ if submit:  # if submit-button is clicked
                     nlp = pipeline("question-answering", model = model_name, tokenizer = model_name)
                     QA_input = {
                         "question": query,
-                        "context": sentences_answer
+                        "context": sentences_answer_pre
                     }
 
                     res = nlp(QA_input)
@@ -272,9 +299,9 @@ if submit:  # if submit-button is clicked
 
                     st.write("Answer: ", res["answer"])
                 else:
-                    """"
-                    things that can be altered in the script: "changeable"
-                    """
+                    
+                    # things that can be altered in the script: "changeable"
+                    
 
                     # enter query and text
                     if query or query_2 != 0:  # if query input
@@ -638,8 +665,8 @@ if submit:  # if submit-button is clicked
                     def convert_single_mathqa_example(example, option, is_training, tokenizer, max_seq_length,
                                                     cls_token, sep_token):
                         """Converts a single MathQAExample into Multiple Retriever Features."""
-                        """ option: tf idf or all"""
-                        """train: 1:3 pos neg. Test: all"""
+                        # option: tf idf or all
+                        # train: 1:3 pos neg. Test: all
 
                         pos_features = []
                         features_neg = []
@@ -1191,10 +1218,10 @@ if submit:  # if submit-button is clicked
 
 
                     # convert retriever-output to model-input
-                    '''
-                    convert retriever results to generator test input
-                    '''
-
+                    
+                    # convert retriever results to generator test input
+                    
+                    
                     ### for single sent retrieve
 
                     def convert_test(data_input, topn, max_len):
@@ -1281,6 +1308,10 @@ if submit:  # if submit-button is clicked
                     conversion_output = convert_test(json_in, topn=3, max_len=290)  # takes the top 3 (topn=3) retrieved facts (among table and text)
 
 
+                    st.write("Retrieved sentences: ")
+                    #st.write(conversion_output[0]["qa"]["model_input"])
+                    for ret_sent in conversion_output[0]["qa"]["model_input"]:
+                        st.write(ret_sent[1])
 
 
 
@@ -1365,8 +1396,8 @@ if submit:  # if submit-button is clicked
 
 
                     # finqa_utils
-                    """MathQA utils.
-                    """
+                    # MathQA utils.
+                    
                     def str_to_num(text):
                         text = text.replace(",", "")
                         try:
@@ -2526,6 +2557,7 @@ if submit:  # if submit-button is clicked
                     test_features = convert_examples_to_features(**kwargs)
 
 
+
                     def generate(data_ori, data, model, ksave_dir, mode='valid'):
 
                         pred_list = []
@@ -2616,10 +2648,128 @@ if submit:  # if submit-button is clicked
                         return model_output
                         
 
+                    
 
                     model_output = generate_test()
 
-                    st.write(model_output["pred_programs"])
+                     # printing results
+                    pred_computation = model_output["pred_programs"][0]
+                    #pred_computation.pop()
+                    pred_computation = " ".join(pred_computation)
+
+                    # print results for program generation
+                    st.write(" ")  # empty spaces for spacing
+                    st.write(" ")
+                    st.write(" ")
+                    st.write("Predicted computation: ")
+                    st.write(pred_computation[:-3])
+                    #st.write(model_output["pred_programs"])
+
+
+
+
+
+                    # computation of result
+
+                    try:
+                        import re
+                        model_res = []
+                        for seq in model_output["pred_programs"][0]:  #["subtract(", "5800", ".", ")", "EOF"]  
+                            model_res.append(re.sub(",", "", seq))
+                        model_res.pop()  # delete last element from the list (the EOF-token)
+                        program = " ".join(model_res)  # join list-elements to a string
+                        program_single = program.split(")")  # split the string by calculations
+                        program_single.pop()  # get rid of last element of the list since it is empty
+
+                        operations = []
+                        for program in program_single:
+                            prog_temp = program.split()
+                            prog_temp[0] = prog_temp[0][:-1]
+                            if prog_temp[1][:6] == "const_" or prog_temp[2][:6] == "const_":  # reduce string to number
+                                const_prog = []
+                                const_prog.append(prog_temp[0])
+                                for word in prog_temp[1:]:
+                                    #print("word: ", word[:6])
+                                    if word[:6] == "const_":
+                                        const_prog.append(word[6:])
+                                    else:
+                                        pass
+                                prog_temp = const_prog
+                            else:
+                                pass
+                            operations.append(prog_temp)  # get list of operations
+                            prog_out = prog_temp  # get the program into the right format
+
+
+                        def compute_result(prog_string):
+                            if prog_string[1] == "m1" or prog_string[2] == "m1":
+                                res = "Please refer to the model-output"
+                            else:
+                                # base computations
+                                if prog_string[0] == "subtract":
+                                    res = int(prog_string[1]) - int(prog_string[2])
+                                elif prog_string[0] == "add":
+                                    res = int(prog_string[1]) + int(prog_string[2])
+                                elif prog_string[0] == "multiply":
+                                    res = int(prog_string[1]) * int(prog_string[2])
+                                elif prog_string[0] == "divide":
+                                    res = int(prog_string[1]) / int(prog_string[2])
+                                elif prog_string[0] == "exp":
+                                    res = int(prog_string[1])^(int(prog_string[2]))
+                                # greater
+                                elif prog_string[0] == "greater":
+                                    if prog_string[1] > prog_string[2]:
+                                        res = str(prog_string[1]) + " is greater than " + str(prog_string[2])
+                                    elif prog_string[1] == prog_string[2]:
+                                        res = str(prog_string[1]) + " is equal to " + str(prog_string[2])
+                                    else:
+                                        res = str(prog_string[1]) + " is not smaller than " + str(prog_string[2])
+                                # table computations
+                                elif prog_string[0] == "table_sum":
+                                    res = "Please sum over the following table: " + str(prog_string[1])  # prog_string[1] refers to the retrieved table in this case
+                                elif prog_string[0] == "table_average":
+                                    res = "Please average over the following table: " + str(prog_string[1])
+                                elif prog_string[0] == "table_min":
+                                    res = "Please look for the minimum of the following table: " + str(prog_string[1])
+                                elif prog_string[0] == "table_max":
+                                    res = "Please look for the maximum of the following table: " + str(prog_string[1])
+                                else:
+                                    res = "Conversion to an output was not possible."
+                            return res
+
+
+                        res_temp = []
+                        for computation in operations:
+                            if computation[1][0] == "#" or computation[2][0] == "#":
+                                if computation[1][0] == "#":
+                                    computation[1] = res_temp[int(computation[1][1])]
+                                else:
+                                    pass
+                                if computation[2][0] == "#":
+                                    computation[2] = res_temp[int(computation[2][1])]
+                            else:
+                                pass
+                            res_step = compute_result(computation)
+                            res_temp.append(res_step)  # list for results, that the computation can refer to
+                                            
+                        st.write(" ")  # empty spaces for spacing
+                        st.write(" ")
+                        st.write(" ")
+                        st.write("Result: ")
+                        st.write(str(res_step))  # write prediction, newest iteration of res_step      
+                        
+                    except:
+                        st.write(" ")  # empty spaces for spacing
+                        st.write(" ")
+                        st.write(" ")
+                        st.write("Result: ")
+                        st.write("Unfortunately the conversion to a result did not work, please refer to the program output.")       
+
+
+
+
+
+
 
             else:
                 answers_else = {
@@ -2647,10 +2797,10 @@ if submit:  # if submit-button is clicked
         if datetime.now().month == 12:
             st.snow()  # winter-theme
         # notification-sound (when computation finished)
-        import pygame
-        pygame.mixer.init()
-        pygame.mixer.music.load("w_short.mp3")
-        pygame.mixer.music.play()  # play notification-sound
+        #import pygame
+        #pygame.mixer.init()
+        #pygame.mixer.music.load("w_short.mp3")
+        #pygame.mixer.music.play()  # play notification-sound
 
         waiting_location.text("")  # stop loading-animation
     done = 0
@@ -2668,7 +2818,7 @@ st.write(" ")
 
 
 # show question examples
-graphic_1 = Image.open("vide_graphic_1.png")
-st.image(graphic_1)
+#graphic_1 = Image.open("vide_graphic_1.png")
+#st.image(graphic_1)
 
 

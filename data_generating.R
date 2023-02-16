@@ -5,33 +5,29 @@
 library(edgar) # API package
 library(jsonlite) # read_json
 library(data.table) # rbindlist()
-library(ff) # move order to different directory
+library(ff) # move folder to different directory
 library(magrittr) # %>%
-library(tidyr) # only for the gather function => specific package?
+library(tidyr) # only for the gather function 
 
 
 
-# set working directory
-#setwd("/Users/felix/Documents/git/Vide/new/recent_12_02/Vide")
-setwd("/Users/felix/Documents/cloud/Data-testing")
+# set working directory to project folder
+setwd("your_path")
 
 
 # get a list of company codes from the API 
-company_codes_all <- read_json("https://www.sec.gov/files/company_tickers.json") %>% rbindlist() # API request to get the company codes
+company_codes_all <- read_json("https://www.sec.gov/files/company_tickers.json") %>% rbindlist() 
 
 # save the file 
 write.csv(company_codes_all, "data/company_codes_all.csv", row.names = FALSE) # for late use
 
 
-# for now we get the codes manually
-#### data for our model
 
-company_names <- c("amazon", "walmart", "cocacola", "apple", "ebay")
-#company_codes <- c(1018724, 104169, 21344, 320193, 1065088)
+#### data for our model
+# input for the API
+
 company_codes <- c(1018724, 1065088, 21344)
 relevant_years <- c(2021, 2022)
-
-
 
 
 # use Edgar package to get all annual reports 
@@ -41,17 +37,15 @@ relevant_years <- c(2021, 2022)
 user_agent <- "Felix Froschauer felix.froschauer@student.uni-tuebingen.de"
 
 
-# all html files 
-
 # getFilingsHTML retrieves all specified company-year 10-k reports as .txt and .html
 get_fillings <- getFilingsHTML(company_codes, "10-K", relevant_years, quarter = 1, useragent = user_agent)
 
+# save the file
 write.csv(get_fillings, "data/our_company_list.csv", row.names = FALSE)
 
 
 # for a clean structure, we can delete folder "full_text" and folder "Master Indexes"
-# and move the relevant under a more obvious structure
-
+# and move the relevant files to have a clear structure
 
 old_path <- "Edgar filings_HTML view"
 new_path <- "data/all_filings_html"
