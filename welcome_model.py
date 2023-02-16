@@ -20,13 +20,17 @@ st.set_page_config(
 
 #st.sidebar.title("application")
 
+
+# set base path
+base_path = ""
+
 # setup of the page
 # load pictures
 from datetime import datetime
 if datetime.now().month == 12:  # december
-    logo = Image.open("logo_temp/vide_design_winter.png")  # winter-theme
+    logo = Image.open(base_path + "graphics/logo_design_winter.png")  # winter-theme
 else:  # every other month
-    logo = Image.open("logo_temp/vide_design_3.png")  # base
+    logo = Image.open(base_path + "graphics/logo_design_3.png")  # base
 
 
 # header
@@ -63,7 +67,7 @@ st.write("In the first step you can select a company and year from the selection
 #from company_year import comp_year
 
 # dataframe for company-year-combinations
-comp_year_df = pd.read_csv("data/our_company_list.csv")
+comp_year_df = pd.read_csv(base_path + "data/our_company_list.csv")
 
 
 # create columns for document choice
@@ -156,7 +160,7 @@ submit = st.button("Submit")  # submit-button
 # add table to json-file
 # load input-template (basic json-file with empty inputs)
 #query = "What is up?"  # test
-json_in = "input_template.json"
+json_in = base_path + "input_template.json"
 with open(json_in) as f_in:
     model_data = json.load(f_in)
 
@@ -177,7 +181,7 @@ if submit:  # if submit-button is clicked
     if query or query_2:  # if query is inserted, start computation
         with st.spinner("Please wait, our army of insanely intelligent raccoons skims the document for your answer."):
             import base64
-            graphic_waiting = open("racoon/graphic_waiting_4.gif", "rb")
+            graphic_waiting = open(base_path + "graphics/waiting_animation_4.gif", "rb")
             contents_waiting = graphic_waiting.read()
             data_waiting = base64.b64encode(contents_waiting).decode("utf-8")
             graphic_waiting.close()
@@ -357,9 +361,9 @@ if submit:  # if submit-button is clicked
                         prog_name = "retriever"
 
                         # set up your own path here
-                        root_path = ""
-                        output_path = "path_to_store_outputs/"
-                        cache_dir = "path_for_other_cache/"
+                        root_path = base_path + ""
+                        output_path = base_path + "path_to_store_outputs/"
+                        cache_dir = base_path + "path_for_other_cache/"
 
                         # the name of your result folder.
                         model_save_name = "retriever-bert-base-test"
@@ -1107,10 +1111,10 @@ if submit:  # if submit-button is clicked
 
 
                     # import opeartions and constants for the programm generation
-                    op_list = read_txt("operation_list.txt", log_file)
+                    op_list = read_txt(base_path + "operation_list.txt", log_file)
                     op_list = [op + '(' for op in op_list]
                     op_list = ['EOF', 'UNK', 'GO', ')'] + op_list
-                    const_list = read_txt("constant_list.txt", log_file)
+                    const_list = read_txt(base_path + "constant_list.txt", log_file)
                     const_list = [const.lower().replace('.', '_') for const in const_list]
                     reserved_token_size = len(op_list) + len(const_list)
 
@@ -1183,7 +1187,7 @@ if submit:  # if submit-button is clicked
                                 all_filename_id.extend(filename_id)
                                 all_ind.extend(ind)
 
-                        output_prediction_file = "retriever_output.json"  # only used if results are saved
+                        output_prediction_file = base_path + "retriever_output.json"  # only used if results are saved
 
                         if mode == "valid":
                             print_res = retrieve_evaluate(
@@ -1205,7 +1209,7 @@ if submit:  # if submit-button is clicked
 
                         model = nn.DataParallel(model)
                         model.to(conf.device)
-                        model.load_state_dict(torch.load("model_retriever.pt", map_location = torch.device('cpu')))  # changeable
+                        model.load_state_dict(torch.load(base_path + "model_retriever.pt", map_location = torch.device('cpu')))  # changeable
                         model.eval()
                         retriever_output = generate(test_data, test_features, model, results_path, mode='test')
                         return retriever_output
@@ -1322,9 +1326,9 @@ if submit:  # if submit-button is clicked
                         prog_name = "generator"
 
                         # set up your own path here
-                        root_path = "C:/Users/siriv/Downloads/generator_test/"
-                        output_path = "C:/Users/siriv/Downloads/generator_test/output_retriever_cuda/"
-                        cache_dir = "C:/Users/siriv/Downloads/generator_test/other_cache_generator"
+                        root_path = base_path + ""
+                        output_path = base_path + "output_retriever_cuda/"
+                        cache_dir = base_path + "Cother_cache_generator"
 
                         model_save_name = "bert-base-generator"
 
@@ -1340,8 +1344,8 @@ if submit:  # if submit-button is clicked
                         # infer table-only text-only
                         # test_file = root_path + "dataset/test_retrieve_7k_text_only.json"
 
-                        op_list_file = "operation_list.txt"
-                        const_list_file = "constant_list.txt"
+                        op_list_file = base_path + "operation_list.txt"
+                        const_list_file = base_path + "constant_list.txt"
 
                         # # model choice: bert, roberta, albert
                         pretrained_model = "bert"
@@ -1369,7 +1373,7 @@ if submit:  # if submit-button is clicked
                         # private: for testing private test data
                         device = "cpu"
                         mode = "test"  # train
-                        saved_model_path = root_path + "model_generator.pt"    # "roberta-large-gold_20210713020324/saved_model/loads/119/model.pt"
+                        saved_model_path = base_path + root_path + "model_generator.pt"    # "roberta-large-gold_20210713020324/saved_model/loads/119/model.pt"
                         build_summary = False
 
                         sep_attention = True
@@ -2641,7 +2645,7 @@ if submit:  # if submit-button is clicked
                                         const_list=const_list)
                         model = nn.DataParallel(model)
                         model.to(conf.device)
-                        model.load_state_dict(torch.load("model_generator.pt", map_location = torch.device('cpu')))  # changeable
+                        model.load_state_dict(torch.load(base_path + "model_generator.pt", map_location = torch.device('cpu')))  # changeable
                         model.eval()
                         model_output = generate(test_examples, test_features, model, results_path, mode='test')
                         
@@ -2787,7 +2791,7 @@ if submit:  # if submit-button is clicked
                     "Sometimes we had the answer within ourselves all along."}
                 st.write("Answer: ", random.sample(answers_else, 1)[0])  # print one randomly selected sentence, if no answer to the question could be found
                 st.write("(No answer found, please insert another question or try another document.)")
-                graphic_no_find = Image.open("racoon/racoon_5.png")
+                graphic_no_find = Image.open("graphics/racoon_5.png")
                 st.image(graphic_no_find)
     else:
         st.write("Please enter a query into the intended text-box to initiate a search.")
@@ -2818,7 +2822,7 @@ st.write(" ")
 
 
 # show question examples
-#graphic_1 = Image.open("vide_graphic_1.png")
+#graphic_1 = Image.open("graphics/example_graphic.png")
 #st.image(graphic_1)
 
 
