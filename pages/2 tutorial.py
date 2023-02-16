@@ -5,8 +5,10 @@ import streamlit as st
 from PIL import Image
 
 
+# define base path
+base_path = ""
 # load pictures
-logo_3 = Image.open("logo_temp/vide_design_3.png")
+logo_3 = Image.open(base_path + "graphis/logo_design_3.png")
 
 
 # title
@@ -28,6 +30,6 @@ st.write(" ")
 st.write(" ")
 st.write(" ")
 st.write(" ")
-graphic_1 = Image.open("vide_graphic_1.png")
+graphic_1 = Image.open(base_path + "graphics/example_graphic.png")
 st.image(graphic_1)
 
