@@ -4,9 +4,12 @@
 import streamlit as st
 from PIL import Image
 
+# set base path
+base_path = ""
+
 # load pictures
-logo_3 = Image.open("logo_temp/vide_design_3.png")
-logo_3_200px = Image.open("logo_temp/vide_design_3_200px.png")
+logo_3 = Image.open(base_path + "graphics/logo_design_3.png")
+logo_3_200px = Image.open(base_path + "graphics/logo_design_3_200px.png")
 
 # title (placed in center)
 header_1, header_2, header_3 = st.columns(3)
@@ -48,7 +51,7 @@ st.write("The all-MiniLM-L6_v2 model is also used for the application.")
 st.write(" ")
 st.write(" ")
 st.write(" ")
-meme_1 = Image.open("logo_temp/meme_1.png")
+meme_1 = Image.open(base_path + "graphics/meme_1.png")
 st.image(meme_1)
 
 
